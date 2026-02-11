@@ -5,18 +5,19 @@ set -e
 ISO_URL="https://go.microsoft.com/fwlink/p/?LinkID=2195443"
 ISO_FILE="win11-gamer.iso"
 
-DISK_SIZE="64G"
+DISK_SIZE="50G"
 
-RAM="8G"
-CORES="4"
+RAM="16G"
+CORES="8"
 
 VNC_DISPLAY=":0"
 RDP_PORT="3389"
 
 FLAG_FILE="installed.flag"
 
-# === LƯU DISK TRONG WORKSPACE IDX (persistent, không bị xóa) ===
-WORKDIR="/home/user/windows-idx-maintest"
+# Disk VM lưu ở /home/user (có nhiều dung lượng hơn workspace ~10GB)
+# Workspace IDX chỉ chứa script, không chứa file lớn
+WORKDIR="/home/user/windows-vm"
 DISK_FILE="$WORKDIR/win11.qcow2"
 
 ### BORE CONFIG ###
@@ -43,9 +44,9 @@ fi
 ############################
 (
   while true; do
-    echo "Lộc Nguyễn đẹp troai" > locnguyen.txt
-    echo "[$(date '+%H:%M:%S')] Đã tạo locnguyen.txt"
-    # Giảm xuống 60s để giữ workspace IDX luôn active, tránh bị xóa
+    # Ghi file keep-alive vào /tmp (không chiếm dung lượng workspace)
+    echo "keepalive $(date '+%H:%M:%S')" > /tmp/idx_keepalive.txt
+    # Mỗi 60s ghi 1 lần để IDX không nghĩ VM idle
     sleep 60
   done
 ) &
